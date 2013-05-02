@@ -100,8 +100,8 @@ for i in range(1, pageCount + 1):
             star = int(starNode[0].getText().replace(ratingConcatString, ""))
             stars.append(star)
             reviews.append(reviewNode[0].getText())
-            if len(likeNode) > 1:
-                like = likeNode[1].getText().replace(likeConcatStringPlural, "")  \
+            if len(likeNode) > 0:
+                like = likeNode[0].getText().replace(likeConcatStringPlural, "")  \
                          .replace(likeConcatStringSingular, "")
             else:
                 like = "0"
