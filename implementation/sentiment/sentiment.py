@@ -3,7 +3,7 @@ from __future__ import division
 import matplotlib.pyplot as plt
 import csv
 import pickle
-
+from pylab import polyfit, poly1d
 
 def loadLabMT(path):
     """ Load labMT file into a dictionary.
@@ -65,7 +65,7 @@ def analyse(reviews, labMTPath, saveResultToPath):
         pickle.dump(result, f)
 
 
-def visualise(fileName):
+def visualise(fileName, title="", linearFit=False):
     """ Draw graph representing the result. A bit verbose as that seem to be the only way to make borders gray.
     fileName = path and name of the pickled results
     """
@@ -73,13 +73,22 @@ def visualise(fileName):
         data = pickle.load(f)
         fig = plt.figure()
         p = fig.add_subplot(111)
-        p.plot(data[0], data[1], 'bo-', label="sentiment")
-        p.plot([data[0][0], data[0][-1]], [data[1][0], data[1][-1]], 'g', label="straight line through first and last point")
+        if not linearFit:
+            p.plot(data[0], data[1], 'bo-', label="sentiment")
+            p.plot([data[0][0], data[0][-1]], [data[1][0], data[1][-1]],
+                   'g', label="straight line through first and last point")
+        else:
+            fit = polyfit(data[0], data[1], 1)
+            fitFunc = poly1d(fit)
+            p.plot(data[0], data[1], 'ro', label='sentiment')
+            p.plot(data[0], fitFunc(data[0]), "--k", label="linear fit")
         p.legend(prop={'size': 10}, frameon=False)
         plt.ylabel("Average happiness")
         plt.xlabel("Rating")
         for e in ['bottom', 'top', 'left', 'right']:
             p.spines[e].set_color('gray')
+        if title:
+            plt.title(title)
         plt.show()
 
 
