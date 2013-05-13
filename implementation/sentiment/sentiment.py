@@ -139,7 +139,7 @@ def analyse(reviews, labMTPath, saveResultToPath):
         pickle.dump(result, f)
 
 
-def visualise(fileName, title="", linearFit=False, polyFit=True):
+def visualise(fileName, title="", linearFit=False, polyFit=False):
     """ Draw graph representing the result. A bit verbose as that seem to be the only way to make borders gray.
     fileName = path and name of the pickled results
     """
