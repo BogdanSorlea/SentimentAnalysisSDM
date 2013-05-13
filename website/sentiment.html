@@ -1,0 +1,81 @@
+
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <title>My Tumblelog</title>
+    <link href="css/twitter-bootstrap-1.4.0.css" rel="stylesheet">
+    <style>.content {padding-top: 80px;}</style>
+  </head>
+
+  <body>
+
+    <div class="topbar">
+      <div class="fill">
+        <div class="container">
+          <h1 style="margin-bottom:4px;"><a href="/" class="brand">SDM project</a>| <small>by Lukasz Duda, Konstantinos Blatsoukas, Piotr Milczarek and Bogdan Sorlea</small></h1>
+        </div>
+      </div>
+    </div>
+
+    <div class="container">
+      <div class="content">
+      	<h1 id="top">Sentiment Analysis.</h1>
+        <ol>
+          <li><a href="#1">Main idea</a></li>
+          <li><a href="#2">Data sources</a></li>
+          <li><a href="#3">Technique that we used to extract the data</a></li>
+          <li><a href="#4">Graphs/outcomes</a></li>
+          <li><a href="#6">Conclusions</a></li>
+        </ol>
+
+        <h2 id="1">Main idea</h2>
+        <p>
+          The main idea was to collect a large data set  that contains user/customer reviews and the corresponding ratings and then to calculate the sentiment that each review produces and see if there is any particular relation between them. Furthermore, we did this using different data sources in order to see if the relation between the sentiment and rating holds for all the  diffent data sources. Additionally we can observe the distribution of ratings on different websites and see how average sentiment changes over time</p>
+          <h3>What is sentiment analysis?<small>a brief introduction</small></h3>
+          <p>Sentiment analysis allows us to compute the general mood of a given text. We use the LabMT dataset which pairs words with the rating of how happy the word is, on the scale from 1 to 10. This data was obtained in large user surveys. To find the sentiment we analyse each word of a review separately and compute the average happiness. This method does not take compound phrases or irony into account. However if a large enough dataset is used the results are satisfactory.</p>
+        <h2 id="2">Data sources</h2><p>The data was collected from the following web sites:</p>
+        <ol>
+        <li>www.imdb.com:<br/> website providing a wealth of information about movies. Users of the websites can review the movies, we chose to extract this data from top 250 movie list</li>
+        <li>www.amazon.com: e-commerce website with different kinds of products. We choose to collect data about books. We chose reviews from top 100 bestselling books for each year from 2000 to 2012.</li>
+        <li>www.metacritic.com: main purpose of this site is the aggregation of ratings given by critics for games, movies and TV shows. However each entry can also contain reviews made by website's users. We collected the user reviews from movies released in the 2000-2012 period.</li>
+        </ol>
+        Additionally we used the dataset provided by yelp.com for academic use. It contains reviews for 250 businesses nearest to 30 universities from California, USA.
+        <h2 id="3">Technique that we used to extract the data</h2>
+        <p>In order to retrieve the review text and ratings we used HTTP GET requests(using the appropriate Python function) sent to appropriate website. We then obtain the html file that a browser of a normal user would see. We extract all the necessary data from html files using Beautiful Soup library. It is a Python library that allows you to parse html data in an easy way.</p>
+
+        <h2 id="4">Graphs/outcomes</h2>
+        <h3><i>IMDB graphs</i></h3>
+        <img src="images/countRev.png" alt="Smiley face" height="350">
+        <p>The above graph show us how many users voted for each rating.</p>
+        <p>The result of the graph was the expected one, because we have extracted data from  
+        250 top list movies. As a result, the vast majority of votes comes from high rates (like 8,9,10). 
+        Furthermore, we can say that few people choose to vote between 2-5. In addition it seems that if someone is going to vote in a negative way propably they are going to vote 1 i.e. they used to vote the lowest ratting.</p>
+        <img src="images/imdbSentiment.png" alt="Smiley face" height="350">
+        <p>The above graph show us the relation between the sentiment and the rating. 
+        The sentiment was calculated from almost 150000 reviews. We can see from the graph that as the sentiment rises the same  happens for the rating.</p>
+
+        <br/>
+        <h3><i>Amazon graphs</i></h3>
+        <img src="images/amazon_2010.png" alt="Smiley face" height="350">
+        <img src="images/amazon_2011.png" alt="Smiley face" height="350">
+        <img src="images/amazon_2012.png" alt="Smiley face" height="350">
+        <br/>
+        <img src="images/amazon_2010_counts.png" alt="Smiley face" height="350">
+        <h3><i>Metacritic graphs</i></h3>
+        <img src="images/MetacriticFrequency.png" alt="Smiley face" height="350">
+        <img src="images/MetacriticSentimentPolynomial.png" alt="Smiley face" height="350">
+        <img src="images/MetacriticByYear.png" alt="Smiley face" height="350">
+        <h3><i>Yelp graphs</i></h3>
+        <img src="images/YelpFrequency.png" alt="Smiley face" height="350">
+        <img src="images/YelpSentiment.png" alt="Smiley face" height="350">
+        
+        <h2 id="6">Conclusions</h2>
+
+
+
+      </div>
+    </div>
+
+  </body>
+</html>
