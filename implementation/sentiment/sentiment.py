@@ -5,6 +5,7 @@ import csv
 import pickle
 from pylab import polyfit, poly1d
 
+
 def loadLabMT(path):
     """ Load labMT file into a dictionary.
     """
@@ -17,6 +18,7 @@ def loadLabMT(path):
         for row in reader:
             happiness[row[0]] = float(row[2])
     return happiness
+
 
 def getSentiment(text, labMT):
     """ Return sentiment of the text by calculating average happiness. Words are split on whitespace which
@@ -31,6 +33,78 @@ def getSentiment(text, labMT):
             score = score + labMT[word]
             matches += 1
     return score / matches if matches > 0 else None
+
+
+def wholeTextSentiment(fileNames, years, labMTPath, outPath):
+    """
+    Calculate sentiment in a given year.
+    fileNames = a list of fileNames containing pickled reviews
+    years = a sorted ascending list of years with len equal to that of fileNames
+    outPath = path where pickled result will be saved
+    """
+    print years
+    sentiment = []
+    labMT = loadLabMT(labMTPath)
+    for i in range(len(fileNames)):
+        with open(fileNames[i], "rb") as f:
+            reviews = pickle.load(f)
+            wholeText = " ".join([entry[0] for entry in reviews])
+            sentiment += [getSentiment(wholeText, labMT)]
+    with open(outPath, "wb") as f:
+        pickle.dump((years, sentiment), f)
+
+
+def ratingFrequency(reviews, outPath):
+    """
+    Calculate the total number of reviews for a given rating.
+    reviews = list of review tuples
+    outPath = path where pickled result will be saved.
+    """
+    freq = {}
+    for r in reviews:
+        rating = r[1]
+        freq[rating] = freq.get(rating, 0) + 1
+    data = zip(*freq.iteritems())
+    with open(outPath, "wb") as f:
+        pickle.dump(data, f)
+
+
+def visualiseFrequency(picklePath, title= ""):
+    """
+    Visualise the result of ratingFrequency function.
+    """
+    with open(picklePath, "rb") as f:
+        data = pickle.load(f)
+        fig = plt.figure()
+        p = fig.add_subplot(111)
+        p.bar(data[0], data[1], align='center', color='red')
+        plt.xlim([-1, 11])
+        plt.ylabel("Number of reviews")
+        plt.xlabel("Rating")
+        for e in ['bottom', 'top', 'left', 'right']:
+            p.spines[e].set_color('gray')
+        if title:
+            plt.title(title)
+        plt.show()
+
+
+def visualiseYears(picklePath, title=""):
+    """
+    Visualise the result of wholeTextSentiment function.
+    """
+    with open(picklePath, "rb") as f:
+        data = pickle.load(f)
+        fig = plt.figure()
+        p = fig.add_subplot(111)
+        p.plot(data[0], data[1], 'bo-', label="sentiment")
+        p.legend(prop={'size': 10}, frameon=False)
+        plt.ylabel("Average happiness")
+        plt.xlabel("Year")
+        for e in ['bottom', 'top', 'left', 'right']:
+            p.spines[e].set_color('gray')
+        if title:
+            plt.title(title)
+        plt.show()
 
 
 def sentimentRankingComparison(reviews, labMT):
@@ -80,7 +154,7 @@ def visualise(fileName, title="", linearFit=False):
         else:
             fit = polyfit(data[0], data[1], 1)
             fitFunc = poly1d(fit)
-            p.plot(data[0], data[1], 'ro', label='sentiment')
+            p.plot(data[0], data[1], '-ro', label='sentiment')
             p.plot(data[0], fitFunc(data[0]), "--k", label="linear fit")
         p.legend(prop={'size': 10}, frameon=False)
         plt.ylabel("Average happiness")
@@ -92,5 +166,35 @@ def visualise(fileName, title="", linearFit=False):
         plt.show()
 
 
+def visualiseCombined(fileNames, labels, title=""):
+    """ Draw graph representing combined results.
+    fileNames = list of paths to pickled results
+    """
+    fig = plt.figure()
+    p = fig.add_subplot(111)
+    for i in range(len(fileNames)):
+        data = normalizeDataFrom(fileNames[i])
+        p.plot(data[0], data[1], label=labels[i])
+    p.legend(prop={'size': 10}, frameon=False)
+    plt.ylabel("Average happiness")
+    plt.xlabel("Rating")
+    for e in ['bottom', 'top', 'left', 'right']:
+        p.spines[e].set_color('gray')
+    if title:
+        plt.title(title)
+    plt.show()
 
+
+def normalizeDataFrom(fileName):
+    with open(fileName, "rb") as f:
+        data = pickle.load(f)
+        newData = []
+        print data
+        if len(data[0]) > 5:
+            averages = [(data[1][i*2]+data[1][i*2+1])/2 for i in range(5)]
+            newData = [range(1,6), averages]
+            print newData
+        else:
+            newData = data
+        return newData
 
