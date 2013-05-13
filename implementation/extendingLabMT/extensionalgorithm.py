@@ -7,6 +7,9 @@ datapath = "../../data/"
 labMTsource = "labMT"
 labMTsourceExtension = ".txt"
 
+#reviewDataSourceFile = "goodreads.13496"
+reviewDataSourceFile = "goodreads.20130510"
+
 def normalizeSentiment(sentiment):
     min = 1.0
     max = 9.0
@@ -20,6 +23,8 @@ def normalizeRating(rating):
 def toSentiment(rating):
     A = 1
     B = 0
+    #A = 0.025
+    #B = 5.355
     return float(A * rating + B)
 
 def getwords(doc):
@@ -39,13 +44,14 @@ MTdata = pickle.load(input_)
 #pprint.pprint(MTdata["validation"]["necessity"])
 input_.close()
 
-input_ = open(datapath + "goodreads.13496" + labMTsourceExtension, "rb")
+input_ = open(datapath + reviewDataSourceFile + labMTsourceExtension, "rb")
 TXTdata = pickle.load(input_)
 #pprint.pprint(TXTdata)
 input_.close()
 
 #stars,reviews
 lim = 0
+setLimit = False
 
 newwords = {}
 
@@ -54,7 +60,7 @@ for i in range(len(TXTdata["reviews"])):
     if TXTdata["stars"][i] == 1:
         continue
     
-    if lim == 100:
+    if setLimit and lim == 100:
         break
     else:
         lim += 1
@@ -86,6 +92,8 @@ for i in range(len(TXTdata["reviews"])):
     #print "----- " + str(TXTdata["stars"][i]) + " star(s)"
     #print "----- " + str(toSentiment(normalizeRating(TXTdata["stars"][i])))
     #print "----- " + str(pow(toSentiment(normalizeRating(TXTdata["stars"][i])), totalRelevant))
+    if countNew == 0:
+        continue
     tmp = rating
     #print "----- " + str(tmp)
     rating = pow(toSentiment(normalizeRating(TXTdata["stars"][i])), totalRelevant)
