@@ -78,7 +78,7 @@ def visualiseFrequency(picklePath, title= ""):
         fig = plt.figure()
         p = fig.add_subplot(111)
         p.bar(data[0], data[1], align='center', color='red')
-        plt.xlim([-1, 11])
+        plt.xlim([min(data[0])-1, max(data[0])+1])
         plt.ylabel("Number of reviews")
         plt.xlabel("Rating")
         for e in ['bottom', 'top', 'left', 'right']:
@@ -139,7 +139,7 @@ def analyse(reviews, labMTPath, saveResultToPath):
         pickle.dump(result, f)
 
 
-def visualise(fileName, title="", linearFit=False):
+def visualise(fileName, title="", linearFit=False, polyFit=True):
     """ Draw graph representing the result. A bit verbose as that seem to be the only way to make borders gray.
     fileName = path and name of the pickled results
     """
@@ -147,15 +147,20 @@ def visualise(fileName, title="", linearFit=False):
         data = pickle.load(f)
         fig = plt.figure()
         p = fig.add_subplot(111)
-        if not linearFit:
+        if not linearFit and not polyfit:
             p.plot(data[0], data[1], 'bo-', label="sentiment")
             p.plot([data[0][0], data[0][-1]], [data[1][0], data[1][-1]],
                    'g', label="straight line through first and last point")
-        else:
+        elif linearFit:
             fit = polyfit(data[0], data[1], 1)
             fitFunc = poly1d(fit)
             p.plot(data[0], data[1], '-ro', label='sentiment')
             p.plot(data[0], fitFunc(data[0]), "--k", label="linear fit")
+        elif polyFit:
+            fit = polyfit(data[0], data[1], 2)
+            f = [d*d*fit[0] + d*fit[1] + fit[2] for d in data[0]]
+            p.plot(data[0], data[1], '-ro', label='sentiment')
+            p.plot(data[0], f, "--k", label="polynomial fit")
         p.legend(prop={'size': 10}, frameon=False)
         plt.ylabel("Average happiness")
         plt.xlabel("Rating")
