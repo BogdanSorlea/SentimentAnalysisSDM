@@ -1,8 +1,9 @@
 import urllib2, re, math, zlib, pprint, pickle
-from BeautifulSoup import BeautifulSoup
+from bs4 import BeautifulSoup
 import codecs
 import time
 
+initbook=0
 def find_between( s, first, last ):
 	try:
 		start = s.index( first ) + len( first )
@@ -27,7 +28,7 @@ opener.addheaders = [("Accept", "text/javascript, text/html, application/xml, te
 url = ["http://www.amazon.com/gp/bestsellers/","","/books/ref=zg_bsar_books_pg_1?ie=UTF8&pg=",""]
 rurl = ["http://www.amazon.com/product-reviews/","","/ref=cm_cr_pr_top_link_2?ie=UTF8&filterBy=add","","&pageNumber=","","&showViewpoints=0"]
 stars = ["OneStar","TwoStar","ThreeStar","FourStar","FiveStar"]
-for h in (2012, 1995, -1):
+for h in range(2000, 2001, 1):
 	url[1]=str(h)
 	top100links = list()
 	# page = zlib.decompress(response.read(), 16 + zlib.MAX_WBITS)
@@ -43,10 +44,10 @@ for h in (2012, 1995, -1):
 			top100links.append(i.a["href"].strip(' \n\t'))
 			print i.a["href"].strip(' \n\t')
 
-
+	print "\n" + url[0]+url[1]+url[2]+url[3]
 	print "\n\n######## SCRAPING INITIALIZED #########\n\n"
-			
-	for i in top100links[13:]:
+	
+	for i in top100links[initbook:]:
 		ratingComments=[]
 		movie_id = find_between(i, "dp/", "/ref=" )
 		# print "Creating file " + str(h)+"/\amazon_"+str(movie_id)
@@ -64,7 +65,7 @@ for h in (2012, 1995, -1):
 					page = zlib.decompress(response.read(), 16 + zlib.MAX_WBITS)
 					soup = BeautifulSoup(page);
 					break
-				except ValueError:
+				except Exception:
 					time.sleep(3)
 					print "error while loading page, waiting..."
 					pass
@@ -79,9 +80,9 @@ for h in (2012, 1995, -1):
 								pnumber = number
 							if x >= 5:
 								break
-						except ValueError:
+						except Exception:
 							continue
-			except ValueError:
+			except Exception:
 				continue
 			print pnumber
 			for k in range (1,pnumber+1):
@@ -94,7 +95,7 @@ for h in (2012, 1995, -1):
 						page = zlib.decompress(response.read(), 16 + zlib.MAX_WBITS)
 						soup = BeautifulSoup(page);
 						break
-					except ValueError:
+					except Exception:
 						time.sleep(3)
 						print "error while loading page, waiting..."
 						pass
@@ -112,7 +113,7 @@ for h in (2012, 1995, -1):
 					else:
 						try:
 							currentTitle = i.findNext('b').string.strip().encode('ascii', 'ignore')
-						except AttributeError:
+						except Exception:
 							currentTitle = None
 					if i.findNext("div", "tiny") == None:
 						currentString = None
@@ -120,7 +121,7 @@ for h in (2012, 1995, -1):
 						try:
 							currentPart = i.findNext("div", "tiny").findNextSibling(text=True)
 							currentString = currentPart.string.strip()
-						except AttributeError:
+						except Exception:
 							currentString = None
 					while True:
 						# print  currentPart.findNextSibling.name
@@ -136,4 +137,5 @@ for h in (2012, 1995, -1):
 					t=(currentBody,j,currentTitle,usefull,totall)	
 					ratingComments.append(t)
 		pickle.dump(ratingComments,f)
-		f.close()	
+		f.close()
+	initbook = 0
