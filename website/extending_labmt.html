@@ -72,10 +72,13 @@
         </p>
         <img src="images/labmt4.JPG" style="float:right;margin:5px 0px 5px 10px;"/>
         <p>
-          The data set used comprises about 30000 reviews taken from Goodreads (although more reviews can be scraped, I decided to not increase the set too much). I tried to focus the data to be part of a certain domain (in this case a book category - Epic Fantasy), so I scraped reviews from the most famous (and reviewed) fantasy books, e.g. "Game of Thrones" series. This decision was based on the fact that reviews for books in the same category would yield higher frequency for the new words - since many of them might be domain-specific words.
+          The data set used comprises about 30000 reviews taken from Goodreads (although more reviews can be scraped, I decided to not increase the set too much - processing takes forever on a bigger data set). I tried to focus the data to be part of a certain domain (in this case a book category - Epic Fantasy), so I scraped reviews from the most famous (and reviewed) fantasy books, e.g. "Game of Thrones" series. This decision was based on the fact that reviews for books in the same category would yield higher frequency for the new words - since many of them might be domain-specific words.
         </p>
         <p>
           Each of the reviews on the website contain an actual text review, a rating (given as number of stars) and a "like" rating, i.e. the number of likes the reviewer received from its friends in the community. All these three elements are scraped, but the "like" rating is not taken into account in this version of the implementation. Also note that the scraper implemented ignores the reviews that have no rating associated to them (data being irrelevant to the algorithm).
+        </p>
+        <p>
+          Note that in the implementation, I have excluded the words that are considered "stopwords" (not by sentiment rating, but rather by keeping a list of stop words, which I downloaded from the internet).
         </p>
         <h2 id="4">Implementation <small>engineer at Work, do not disturb!</small></h2>
         <p>
@@ -92,9 +95,78 @@
         <p>
           The algorithm was implemented using a geometrical mean-based approach (similar to the one explained in "Theoretical Foundation" section). The reason for this decision is that during implementation it was observed that the geometrical mean approach has fewer misses compared to the arithmetical mean approach. By "miss", I refer to the fact that in certain conditions, the sentiment value obtained for the individual unknown words, normalized is greater than 1. This happens when the rating (and therefore the sentiment) is high, but the known words induce a sentiment which is too low, therefore the unknown sentiment having to be higher than 1. Note that cases like this are disregarded.
         </p>
+        <p>
+          For illustration purposes, first I will present the result of the algorithm run on the 30000 comments data set, using a linear correlation function
+          <pre>f(x) = x</pre>
+          The following results represent part of the words contained in the 10% labMT set (used for validation). Remeber that the result values are normalized.
+        </p>
+        <table cellpadding="0" cellspacing="0">
+          <tr><th>Word</th><th>Hits (times it appeared)</th><th>Computed Sentiment</th><th>LabMT rating</th></tr>
+          <tr><td>exciting</td><td>326</td><td>0.381947480578</td><td>0.8225</td></tr>
+          <tr><td>guess</td><td>334</td><td>0.331589288081</td><td>0.58</td></tr>
+          <tr><td>important</td><td>340</td><td>0.336264861178</td><td>0.665</td></tr>
+          <tr><td>completely</td><td>347</td><td>0.342163867971</td><td>0.6675</td></tr>
+          <tr><td>stuff</td><td>349</td><td>0.346474990648</td><td>0.5725</td></tr>
+          <tr><td>feeling</td><td>360</td><td>0.335035543812</td><td>0.5875</td></tr>
+          <tr><td>sense</td><td>390</td><td>0.356663250759</td><td>0.6625</td></tr>
+          <tr><td>king</td><td>394</td><td>0.391280446607</td><td>0.6475</td></tr>
+          <tr><td>takes</td><td>402</td><td>0.36046711371</td><td>0.505</td></tr>
+          <tr><td>happen</td><td>481</td><td>0.32609548727</td><td>0.535</td></tr>
+          <tr><td>chapter</td><td>584</td><td>0.354074074738</td><td>0.575</td></tr>
+          <tr><td>start</td><td>611</td><td>0.386961619741</td><td>0.6375</td></tr>
+          <tr><td>doesn</td><td>750</td><td>0.342056894922</td><td>0.46375</td></tr>
+          <tr><td>point</td><td>917</td><td>0.325204533271</td><td>0.5525</td></tr>
+          <tr><td>enjoyed</td><td>974</td><td>0.418021152229</td><td>0.8775</td></tr>
+          <tr><td>find</td><td>1002</td><td>0.361203142734</td><td>0.625</td></tr>
+          <tr><td>writing</td><td>1090</td><td>0.339843336093</td><td>0.655</td></tr>
+          <tr><td>bit</td><td>1195</td><td>0.393748031584</td><td>0.4425</td></tr>
+          <tr><td>don</td><td>1711</td><td>0.323051126008</td><td>0.4975</td></tr>
+          <tr><td>good</td><td>2387</td><td>0.381300346158</td><td>0.775</td></tr>
+        </table>
+        <p>
+          The following plot shows the correlation between the two values (computed and labMT). As it can be seen, the correlation is almost nonexisting (or it is hard to extract).
+        </p>
+        <img src="images/labmt6.JPG" />
+        <table cellpadding="0" cellspacing="0">
+          <tr><th>Word</th><th>Hits (times it appeared)</th><th>Computed Sentiment</th><th>LabMT rating</th></tr>
+          <tr><td>exciting</td><td>1172</td><td>0.21966566749</td><td>0.8225</td></tr>
+          <tr><td>wheel</td><td>1175</td><td>0.205761186596</td><td>0.5975</td></tr>
+          <tr><td>feeling</td><td>1234</td><td>0.212407978271</td><td>0.5875</td></tr>
+          <tr><td>family</td><td>1280</td><td>0.260462799184</td><td>0.84</td></tr>
+          <tr><td>dark</td><td>1291</td><td>0.250981620456</td><td>0.3525</td></tr>
+          <tr><td>awesome</td><td>1296</td><td>0.263454243747</td><td>0.825</td></tr>
+          <tr><td>important</td><td>1330</td><td>0.228299689603</td><td>0.665</td></tr>
+          <tr><td>created</td><td>1352</td><td>0.23809648666</td><td>0.6325</td></tr>
+          <tr><td>sense</td><td>1550</td><td>0.228207024533</td><td>0.6625</td></tr>
+          <tr><td>completely</td><td>1578</td><td>0.236850104245</td><td>0.6675</td></tr>
+          <tr><td>takes</td><td>1798</td><td>0.23833839301</td><td>0.505</td></tr>
+          <tr><td>happen</td><td>1805</td><td>0.227983956225</td><td>0.535</td></tr>
+          <tr><td>king</td><td>1909</td><td>0.272866229678</td><td>0.6475</td></tr>
+          <tr><td>chapter</td><td>2353</td><td>0.22862687514</td><td>0.575</td></tr>
+          <tr><td>doesn</td><td>2591</td><td>0.218870903914</td><td>0.46375</td></tr>
+          <tr><td>start</td><td>2720</td><td>0.223914129323</td><td>0.6375</td></tr>
+          <tr><td>point</td><td>3201</td><td>0.212816273504</td><td>0.5525</td></tr>
+          <tr><td>enjoyed</td><td>3620</td><td>0.195957947918</td><td>0.8775</td></tr>
+          <tr><td>writing</td><td>3817</td><td>0.206543247147</td><td>0.655</td></tr>
+          <tr><td>find</td><td>4058</td><td>0.226960288006</td><td>0.625</td></tr>
+          <tr><td>bit</td><td>4146</td><td>0.202574227983</td><td>0.4425</td></tr>
+          <tr><td>don</td><td>5881</td><td>0.209759213704</td><td>0.4975</td></tr>
+          <tr><td>good</td><td>8466</td><td>0.210143718563</td><td>0.775</td></tr>
+        </table>
+        <p>
+          In the following plot we can see the correlation for the new data. This appears to be worse (since the plot is basically flat - but even if the values are scaled to a broader interval, the effects do not change the outcome) than the previous plot, although it makes more sense.
+        </p>
+        <img src="images/labmt7.JPG" />
         <h2 id="5">Conclusion. Further work <small>finally, the time has come... for a beer!</small></h2>
+        <p>
+          As presented above, the results of the implementation are not even remotely relevant. This proves that the method is either insufficient or ineffective in providing the expected outcome. Although I do not encourage further work on this idea, further improvement ideas can be implemented:
+          <ul>
+            <li>considering initial average to be a weighted arithmetic or geometric mean (and using some appropriate weights - however, I have no idea what those weights can be)</li>
+            <li>taking into account other data (e.g. "like" rating - could provide the weight for the sentiment, although assuming that this data is appropriate is too far-fetched)</li>
+            <li>review stop word list and improve it</li>
+          </ul>
+        </p>
         <h2 id="6">Appendix <small>D'oh!</small></h2>
-        
       </div>
     </div>
 

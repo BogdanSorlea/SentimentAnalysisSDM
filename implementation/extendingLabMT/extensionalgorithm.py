@@ -57,6 +57,9 @@ newwords = {}
 
 for i in range(len(TXTdata["reviews"])):
 
+    if (i%100 == 0):
+        print i;
+
     if TXTdata["stars"][i] == 1:
         continue
     
@@ -65,7 +68,7 @@ for i in range(len(TXTdata["reviews"])):
     else:
         lim += 1
 
-    print "Review " + str(i) + " ========================="
+    #print "Review " + str(i) + " ========================="
         
     #print(TXTdata["reviews"][i].replace("...more", ""))
     words = getwords(TXTdata["reviews"][i].replace("...more", ""))
@@ -77,6 +80,7 @@ for i in range(len(TXTdata["reviews"])):
     notfound = []
     
     for key in words.keys():
+        #print key
         if key in stopData:
             totalRelevant -= 1
             continue
@@ -96,7 +100,7 @@ for i in range(len(TXTdata["reviews"])):
         continue
     tmp = rating
     #print "----- " + str(tmp)
-    rating = pow(toSentiment(normalizeRating(TXTdata["stars"][i])), totalRelevant)
+    rating = pow(normalizeSentiment(toSentiment(TXTdata["stars"][i])), totalRelevant)
     rating /= tmp
     rating = math.pow(rating, 1/float(countNew))
     #print rating
@@ -105,9 +109,9 @@ for i in range(len(TXTdata["reviews"])):
     if rating > 1 or rating < 0:
         continue
 
-    print "Rating for not found: " + str(rating)
-    print "Total words | relevant | new :: " + str(len(words)) + " | " + \
-          str(totalRelevant) + " | " + str(countNew)
+    #print "Rating for not found: " + str(rating)
+    #print "Total words | relevant | new :: " + str(len(words)) + " | " + \
+    #      str(totalRelevant) + " | " + str(countNew)
 
     for j in range(len(notfound)):
         newwords.setdefault(notfound[j], {"sentiment" : 0, "hits" : 0})
